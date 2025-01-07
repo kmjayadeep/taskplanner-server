@@ -5,7 +5,7 @@ const app = express();
 
 app.use(express.json());
 
-const FILE_PATH = path.join(__dirname, 'todos.json');
+const FILE_PATH = path.join('/tmp', 'todos.json');
 
 const readTasks = () => {
   if (!fs.existsSync(FILE_PATH)) {
@@ -31,6 +31,9 @@ app.post('/tasks', (req, res) => {
     return res.status(400).json({ error: 'Title is required' });
   }
   let tasks = readTasks()
+  if (tasks.length > 100) {
+    return res.status(500).json({ error: 'Task Overflow!' });
+  }
   const newTask = { id: tasks.length, title, completed: false, dueDate };
   tasks.push(newTask);
   writeTasks(tasks)
